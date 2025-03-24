@@ -12,4 +12,6 @@ terraform.tfstate*
 .env.local
 *.env
 
+infra-tech-454706-f8ad3ebcd148.json
+
 .DS_Store

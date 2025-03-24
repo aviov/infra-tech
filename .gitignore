@@ -1,0 +1,15 @@
+.history
+
+.cdktf/
+*.tfstate
+*.tfstate.backup
+terraform.tfstate*
+*.lock.hcl
+
+.github/workflows/*.log
+
+.env
+.env.local
+*.env
+
+.DS_Store

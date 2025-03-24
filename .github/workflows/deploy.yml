@@ -1,0 +1,48 @@
+name: Build and Deploy to GKE
+
+on:
+    push:
+      branches:
+        - main
+  
+env:
+    PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+    GKE_CLUSTER: gke-cluster-name
+    GKE_REGION: europe-north1
+    IMAGE_NAME: sisu-tech-app
+    REGISTRY: europe-north1-docker.pkg.dev
+  
+jobs:
+    build-and-deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+          
+        - name: Authenticate to Google Cloud
+          uses: google-github-actions/auth@v1
+          with:
+            credentials_json: ${{ secrets.GCP_SA_KEY }}
+  
+        - name: Set up gcloud
+          uses: google-github-actions/setup-gcloud@v1
+  
+        - name: Configure Docker
+          run: gcloud auth configure-docker ${{ env.REGISTRY }}
+  
+        - name: Build Docker Image
+          run: |
+            docker build -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/infra-tech/${{ env.IMAGE_NAME }}:latest ./application
+  
+        - name: Push Docker Image
+          run: |
+            docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/infra-tech/${{ env.IMAGE_NAME }}:latest
+  
+        - name: Set up GKE Credentials
+          run: |
+            gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --region ${{ env.GKE_REGION }}
+  
+        # Deploy to GKE with kubectl
+        - name: Deploy to GKE
+          run: |
+            kubectl apply -f kubernetes/

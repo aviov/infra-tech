@@ -16,6 +16,12 @@ spec:
         spec:
             containers:
                 - name: express
-                  image: europe-north1-docker.pkg.dev/sisu-tech/docker-registry/express:latest
+                  image: europe-north1-docker.pkg.dev/infra-tech-454706/infra-tech/express:latest
                   ports:
                       - containerPort: 3000
+                  env:
+                      - name: DATABASE_URL
+                        valueFrom:
+                            secretKeyRef:
+                                name: db-secret
+                                key: database-url

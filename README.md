@@ -51,10 +51,11 @@ Other configuration can be decided by yourself, based on the instance being used
 ## Questions
 
  1. How long did you spend on this assessment in total?\
- _
+ Around 4 hours 30 minutes.
 
  2. What was the most difficult task?\
- _
+ Validate everything matches before final commit push and merge for Actions to work.
 
  3. If you had an unlimited amount of time to complete this task, what would you have done differently?\
- _
+Add health tests, build and deploy some API and schema to handle the application data, frontend as well.
+Play more with CI/CD.

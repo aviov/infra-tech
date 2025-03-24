@@ -27,6 +27,12 @@ jobs:
         - name: Set up gcloud
           uses: google-github-actions/setup-gcloud@v1
   
+        # Install gke-gcloud-auth-plugin
+        - name: Install gke-gcloud-auth-plugin
+          run: |
+            gcloud components install gke-gcloud-auth-plugin --quiet
+            gcloud components update --quiet
+  
         - name: Configure Docker
           run: gcloud auth configure-docker ${{ env.REGISTRY }}
   

@@ -39,11 +39,11 @@ jobs:
             docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/infra-tech/${{ env.IMAGE_NAME }}:latest
   
         # Deployment steps commented out until infrastructure is ready
-        # - name: Set up GKE Credentials
-        #   run: |
-        #     gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --region ${{ env.GKE_REGION }}
+        - name: Set up GKE Credentials
+          run: |
+            gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --region ${{ env.GKE_REGION }}
   
-        # # Deploy to GKE with kubectl
-        # - name: Deploy to GKE
-        #   run: |
-        #     kubectl apply -f kubernetes/
+        # Deploy to GKE with kubectl
+        - name: Deploy to GKE
+          run: |
+            kubectl apply -f kubernetes/

@@ -13,6 +13,10 @@ import { SqlDatabaseInstance } from "@cdktf/provider-google/lib/sql-database-ins
 import { SqlDatabase } from "@cdktf/provider-google/lib/sql-database";
 import { SqlUser } from "@cdktf/provider-google/lib/sql-user";
 import { TerraformOutput } from "cdktf";
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 class MyGcpStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -25,10 +29,14 @@ class MyGcpStack extends TerraformStack {
     //   workspaces: new NamedCloudWorkspace("infra-tech"),
     // });
 
+    const projectId = process.env.GCP_PROJECT_ID || "infra-tech-454706";
+    const region = process.env.GCP_REGION || "europe-north1";
+
     // Google Provider
     new GoogleProvider(this, "google", {
-      project: "infra-tech-454706",
-      region: "europe-north1",
+      project: projectId,
+      region: region,
+      credentials: process.env.GOOGLE_APPLICATION_CREDENTIALS ? require('fs').readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8') : undefined,
     });
 
     // VPC and Subnet
@@ -41,14 +49,14 @@ class MyGcpStack extends TerraformStack {
       name: "infra-tech-subnet",
       ipCidrRange: "10.0.0.0/16",
       network: vpc.id,
-      region: "europe-north1",
+      region: region,
       privateIpGoogleAccess: true,
     });
 
     // GKE
     const cluster = new ContainerCluster(this, "gke-cluster", {
       name: "infra-tech-gke-cluster",
-      location: "europe-north1",
+      location: region,
       network: vpc.id,
       subnetwork: subnet.id,
       initialNodeCount: 1,
@@ -75,14 +83,20 @@ class MyGcpStack extends TerraformStack {
     const sqlInstance = new SqlDatabaseInstance(this, "sql-instance", {
       name: "infra-tech-sql-instance",
       databaseVersion: "POSTGRES_14",
-      region: "europe-north1",
+      region: region,
       settings: {
         tier: "db-f1-micro",
         ipConfiguration: {
-          privateNetwork: vpc.id,
-          authorizedNetworks: [{ value: "0.0.0.0/0", name: "public-https" }],
+          ipv4Enabled: true,
+          authorizedNetworks: [
+            { 
+              value: "0.0.0.0/0",  // For development, restrict this to specific IPs in production
+              name: "public-https" 
+            }
+          ],
         },
       },
+      deletionProtection: false,
     });
 
     // PostgreSQL db
@@ -150,11 +164,17 @@ class MyGcpStack extends TerraformStack {
 const app = new App();
 const stack = new MyGcpStack(app, "gcp-stack");
 
-// GCS backend config
+// // GCS backend config
+// stack.addOverride("terraform.backend", {
+//   gcs: {
+//     bucket: "infra-tech-tfstate",
+//     prefix: "terraform/state",
+//   },
+// });
+// Use local backend during development
 stack.addOverride("terraform.backend", {
-  gcs: {
-    bucket: "infra-tech-tfstate",
-    prefix: "terraform/state",
+  local: {
+    path: "./terraform.tfstate",
   },
 });
 

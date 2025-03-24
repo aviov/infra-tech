@@ -14,4 +14,14 @@ terraform.tfstate*
 
 infra-tech-454706-f8ad3ebcd148.json
 
+.github/workflows/*.log
+
+# Terraform dir firles
+infrastructure/node_modules/
+infrastructure/cdktf.out/
+infrastructure/*.tfstate
+infrastructure/*.tfstate.backup
+infrastructure/terraform.tfstate*
+infrastructure/*.lock.hcl
+
 .DS_Store

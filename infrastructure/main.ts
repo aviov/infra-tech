@@ -77,6 +77,7 @@ class MyGcpStack extends TerraformStack {
           { cidrBlock: "0.0.0.0/0", displayName: "public-https" },
         ],
       },
+      deletionProtection: false,
     });
 
     // PostgreSQL instance

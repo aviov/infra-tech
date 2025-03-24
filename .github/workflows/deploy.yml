@@ -7,7 +7,7 @@ on:
   
 env:
     PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-    GKE_CLUSTER: gke-cluster-name
+    GKE_CLUSTER: infra-tech-gke-cluster 
     GKE_REGION: europe-north1
     IMAGE_NAME: sisu-tech-app
     REGISTRY: europe-north1-docker.pkg.dev
@@ -38,11 +38,12 @@ jobs:
           run: |
             docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/infra-tech/${{ env.IMAGE_NAME }}:latest
   
-        - name: Set up GKE Credentials
-          run: |
-            gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --region ${{ env.GKE_REGION }}
+        # Deployment steps commented out until infrastructure is ready
+        # - name: Set up GKE Credentials
+        #   run: |
+        #     gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --region ${{ env.GKE_REGION }}
   
-        # Deploy to GKE with kubectl
-        - name: Deploy to GKE
-          run: |
-            kubectl apply -f kubernetes/
+        # # Deploy to GKE with kubectl
+        # - name: Deploy to GKE
+        #   run: |
+        #     kubectl apply -f kubernetes/
